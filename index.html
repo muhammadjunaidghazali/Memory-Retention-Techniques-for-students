@@ -3,526 +3,502 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MnemoWars: Memory Retention & Forgetting Arena</title>
+  <title>Operational Self-Debrief: Cognitive Extraction Studio</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
     .fade-in { animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
-    @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-between p-4">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-emerald-500/30 selection:text-emerald-200">
 
-  <!-- Header & Stats Bar -->
-  <header class="w-full max-w-4xl flex items-center justify-between py-3 border-b border-slate-800">
-    <div class="flex items-center gap-3">
-      <div class="h-10 w-10 rounded-xl bg-indigo-600 flex items-center justify-center font-black text-white shadow-lg shadow-indigo-500/20">
-        ⚡
+  <!-- Tactical Navigation & Status Bar -->
+  <header class="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur px-4 py-3 sticky top-0 z-40">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center font-bold text-emerald-400 mono text-sm">
+          OSD
+        </div>
+        <div>
+          <h1 class="text-sm font-bold text-slate-100 tracking-tight flex items-center gap-2">
+            Operational Self-Debrief
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-400 font-normal mono">v1.1</span>
+          </h1>
+          <p class="text-[11px] text-slate-500" id="header-student-name">Immediate Cold Reconstruction Tradecraft</p>
+        </div>
       </div>
-      <div>
-        <h1 class="text-base font-extrabold text-white leading-tight tracking-tight">MnemoWars Arena</h1>
-        <p class="text-xs text-slate-400">Retention Mastery vs. Directed Extinction</p>
-      </div>
-    </div>
 
-    <!-- Live Score HUD -->
-    <div class="flex items-center gap-3">
-      <div class="px-3 py-1 bg-slate-900 border border-slate-800 rounded-lg text-center">
-        <span class="text-[10px] text-slate-400 uppercase font-bold block">Score</span>
-        <span id="hud-score" class="text-sm font-black text-indigo-400">0</span>
+      <!-- Quick Actions -->
+      <div class="flex items-center gap-2">
+        <button onclick="toggleLogbook(true)" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-850 border border-slate-800 text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
+          <span>📁</span> Logbook (<span id="log-count">0</span>)
+        </button>
+        <button onclick="resetToNewDebrief()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-slate-950 text-xs font-bold transition shadow-sm">
+          + New Debrief
+        </button>
       </div>
-      <div class="px-3 py-1 bg-slate-900 border border-slate-800 rounded-lg text-center">
-        <span class="text-[10px] text-slate-400 uppercase font-bold block">Streak</span>
-        <span id="hud-streak" class="text-sm font-black text-amber-400">🔥 0</span>
-      </div>
-      <button onclick="openLeaderboard()" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-xs font-bold text-white transition flex items-center gap-1.5 shadow-md shadow-indigo-600/30">
-        🏆 Leaderboard
-      </button>
     </div>
   </header>
 
-  <!-- Main Arena Container -->
-  <main class="w-full max-w-2xl my-auto py-6">
+  <!-- Main Single-Screen Workspace -->
+  <main class="max-w-5xl w-full mx-auto p-4 md:p-6 flex-1 flex flex-col justify-center">
 
-    <!-- SCREEN 1: Player Onboarding -->
-    <section id="screen-auth" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl text-center fade-in">
-      <div class="w-14 h-14 bg-indigo-950 border border-indigo-700/50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">
-        🧠
+    <!-- Phase Pipeline Indicator -->
+    <div class="grid grid-cols-3 gap-2 mb-4 text-xs font-semibold">
+      <div id="pip-phase-1" class="phase-pip p-2.5 rounded-xl border border-emerald-500 bg-emerald-950/30 text-emerald-300 flex items-center justify-between transition">
+        <span class="flex items-center gap-1.5"><span class="mono">01.</span> Ingestion Block</span>
+        <span class="text-[10px] mono opacity-80">10:00</span>
       </div>
-      <h2 class="text-xl font-extrabold text-white">Enter the Memory Arena</h2>
-      <p class="text-xs text-slate-400 max-w-sm mx-auto mt-1 mb-6">
-        Test your mastery over active recall, dual coding, and intentional forgetting under real-time cognitive pressure.
-      </p>
+      <div id="pip-phase-2" class="phase-pip p-2.5 rounded-xl border border-slate-850 bg-slate-900/40 text-slate-500 flex items-center justify-between transition">
+        <span class="flex items-center gap-1.5"><span class="mono">02.</span> Cold Reconstruction</span>
+        <span class="text-[10px] mono opacity-80">03:00</span>
+      </div>
+      <div id="pip-phase-3" class="phase-pip p-2.5 rounded-xl border border-slate-850 bg-slate-900/40 text-slate-500 flex items-center justify-between transition">
+        <span class="flex items-center gap-1.5"><span class="mono">03.</span> Gap Audit & Fix</span>
+        <span class="text-[10px] mono opacity-80">02:00</span>
+      </div>
+    </div>
 
-      <form id="auth-form" onsubmit="startGame(event)" class="space-y-3 max-w-sm mx-auto text-left">
+    <!-- Active Stage Container -->
+    <div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl p-5 md:p-6 shadow-2xl backdrop-blur relative overflow-hidden">
+      
+      <!-- Top Timer & Protocol Controller -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800/60 mb-5">
         <div>
-          <label class="text-xs font-semibold text-slate-300 block mb-1">Student Full Name</label>
-          <input id="player-name" required type="text" placeholder="e.g. Sara Ahmed" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-indigo-500" />
+          <span id="phase-badge" class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800/60">
+            Phase 1 of 3: Active Study
+          </span>
+          <h2 id="phase-title" class="text-lg font-bold text-white mt-1">Deep Ingestion</h2>
         </div>
-        <div>
-          <label class="text-xs font-semibold text-slate-300 block mb-1">Institutional Email (For Weekly Drills)</label>
-          <input id="player-email" required type="email" placeholder="e.g. sara@student.university.edu" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-indigo-500" />
-        </div>
-        <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-xs font-bold text-white transition shadow-lg shadow-indigo-600/30 mt-2">
-          Start Challenge (10 Rounds)
-        </button>
-      </form>
-    </section>
 
-    <!-- SCREEN 2: Gamified Drill Arena -->
-    <section id="screen-game" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl fade-in space-y-5">
-      <!-- Progress and Timer -->
-      <div class="flex items-center justify-between">
-        <span id="round-indicator" class="text-xs font-bold text-slate-400 uppercase tracking-wider">Round 1 / 10</span>
-        <div class="flex items-center gap-2">
-          <span class="text-xs text-slate-400">Timer:</span>
-          <span id="round-timer" class="text-xs font-extrabold px-2 py-0.5 rounded bg-rose-950 border border-rose-800 text-rose-300">15s</span>
+        <!-- Timer HUD -->
+        <div class="flex items-center gap-3">
+          <div class="mono text-3xl font-black tracking-widest text-emerald-400 bg-slate-950 px-4 py-1.5 rounded-xl border border-slate-800 shadow-inner" id="timer-display">
+            10:00
+          </div>
+          <div class="flex items-center gap-1.5">
+            <button id="btn-toggle-timer" onclick="toggleTimer()" class="h-10 px-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 transition">
+              Start
+            </button>
+            <button onclick="skipPhase()" title="Advance to next phase" class="h-10 px-3 rounded-xl bg-slate-800/60 hover:bg-slate-850 border border-slate-800 text-xs font-semibold text-slate-400 hover:text-white transition">
+              Next ➔
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Technique Category Badge -->
-      <div class="flex items-center gap-2">
-        <span id="technique-badge" class="text-[11px] font-bold px-2.5 py-1 rounded-md bg-indigo-950 text-indigo-300 border border-indigo-800">
-          Dual Coding Drill
-        </span>
-        <span id="technique-mode" class="text-[11px] font-semibold text-slate-400">
-          Target: Retain Essential Information
-        </span>
+      <!-- WORKSPACE AREA: Dynamic Per Phase -->
+      <div id="workspace-dynamic" class="fade-in space-y-4">
+        <!-- Rendered by JavaScript -->
       </div>
-
-      <!-- Challenge Question / Prompt Box -->
-      <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 min-h-[110px] flex items-center justify-center text-center">
-        <p id="challenge-prompt" class="text-sm font-semibold text-slate-100 leading-relaxed">
-          Loading challenge...
-        </p>
-      </div>
-
-      <!-- Multiple Choice Options -->
-      <div id="options-container" class="grid grid-cols-1 gap-2.5">
-        <!-- Rendered by JS -->
-      </div>
-
-      <!-- Explanatory Feedback Box -->
-      <div id="feedback-box" class="hidden p-3.5 rounded-xl border text-xs leading-relaxed fade-in"></div>
-    </section>
-
-    <!-- SCREEN 3: Result & Leaderboard Sync Screen -->
-    <section id="screen-results" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl text-center fade-in space-y-4">
-      <div class="w-14 h-14 bg-emerald-950 border border-emerald-700/50 rounded-2xl flex items-center justify-center mx-auto text-2xl">
-        🎉
-      </div>
-      <h2 class="text-xl font-extrabold text-white">Drill Complete!</h2>
-      <p id="result-summary" class="text-xs text-slate-400 max-w-sm mx-auto">
-        Your cognitive score is being synced with the class Google Sheet.
-      </p>
-
-      <div class="grid grid-cols-3 gap-3 max-w-md mx-auto py-2">
-        <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl">
-          <span class="text-[10px] text-slate-400 uppercase font-bold block">Final Score</span>
-          <span id="res-score" class="text-lg font-black text-indigo-400">0</span>
-        </div>
-        <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl">
-          <span class="text-[10px] text-slate-400 uppercase font-bold block">Accuracy</span>
-          <span id="res-acc" class="text-lg font-black text-emerald-400">0%</span>
-        </div>
-        <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl">
-          <span class="text-[10px] text-slate-400 uppercase font-bold block">Max Streak</span>
-          <span id="res-streak" class="text-lg font-black text-amber-400">0</span>
-        </div>
-      </div>
-
-      <div class="flex gap-2 max-w-md mx-auto pt-2">
-        <button onclick="openLeaderboard()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-bold text-slate-200 transition">
-          View Class Standings
-        </button>
-        <button onclick="location.reload()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-xs font-bold text-white transition shadow-lg shadow-indigo-600/30">
-          Play Again
-        </button>
-      </div>
-    </section>
-
+    </div>
   </main>
 
-  <!-- LEADERBOARD MODAL -->
-  <div id="leaderboard-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <div>
-          <h3 class="font-extrabold text-white text-base flex items-center gap-2">
-            <span>🏆</span> Class Leaderboard
-          </h3>
-          <p class="text-[11px] text-slate-400">Live rankings pulled directly from Google Sheets backend</p>
+  <footer class="border-t border-slate-900 py-3 text-center text-xs text-slate-500 mono">
+    Protocol: No passive reviewing during Step 2. Zero assistance forces synaptic consolidation.
+  </footer>
+
+  <!-- Operator Onboarding Modal (For Name/Email) -->
+  <div id="auth-modal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 max-w-sm w-full shadow-2xl space-y-5 fade-in">
+      <div class="flex justify-center mb-2">
+        <div class="h-14 w-14 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center font-bold text-emerald-400 mono text-xl">
+          OSD
         </div>
-        <button onclick="closeLeaderboard()" class="text-slate-400 hover:text-white text-xs font-bold px-2 py-1 bg-slate-800 rounded-lg">✕</button>
       </div>
-
-      <!-- Leaderboard List -->
-      <div id="leaderboard-list" class="space-y-2 max-h-72 overflow-y-auto pr-1">
-        <p class="text-xs text-slate-400 text-center py-6">Fetching live standings...</p>
+      <div class="text-center">
+        <h3 class="font-bold text-white text-lg">Initialize Agent Protocol</h3>
+        <p class="text-xs text-slate-400 mt-1">Register to sync your cognitive logs.</p>
       </div>
-
-      <button onclick="closeLeaderboard()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-bold text-slate-200 transition">
-        Close Standings
-      </button>
+      
+      <form onsubmit="saveStudentData(event)" class="space-y-4 pt-2">
+        <div>
+          <label class="text-xs font-bold text-slate-300 block mb-1">Agent Name</label>
+          <input id="setup-name" required type="text" placeholder="e.g., Ali Raza" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-emerald-500" />
+        </div>
+        <div>
+          <label class="text-xs font-bold text-slate-300 block mb-1">Contact Email</label>
+          <input id="setup-email" required type="email" placeholder="student@university.edu" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-emerald-500" />
+        </div>
+        <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl text-xs transition shadow-lg">
+          Initialize Workspace
+        </button>
+      </form>
     </div>
   </div>
 
-  <footer class="text-[11px] text-slate-600 text-center py-2">
-    Behavioral Sciences Memory Lab • Continuous Spaced Retrieval & Directed Pruning
-  </footer>
+  <!-- Logbook Drawer / Modal -->
+  <div id="logbook-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-xl w-full shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div>
+          <h3 class="font-bold text-white text-base flex items-center gap-2">
+            <span>📁</span> Extraction Logbook
+          </h3>
+          <p class="text-xs text-slate-400">Past operational debriefs stored in local memory</p>
+        </div>
+        <button onclick="toggleLogbook(false)" class="text-slate-400 hover:text-white text-xs font-bold px-2 py-1 bg-slate-800 rounded-lg">✕</button>
+      </div>
+
+      <div id="logbook-feed" class="space-y-3 overflow-y-auto pr-1 flex-1">
+        <!-- Rendered by JS -->
+      </div>
+
+      <div class="pt-2 border-t border-slate-800 flex justify-between items-center text-xs">
+        <button onclick="clearAllLogs()" class="text-rose-400 hover:underline">Clear History</button>
+        <button onclick="toggleLogbook(false)" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg font-bold">Close</button>
+      </div>
+    </div>
+  </div>
 
   <script>
-    // ==========================================
-    // 1. CONFIGURATION & URL CONNECTION
-    // ==========================================
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw5z89ZCaoiaZcOv3R-ZcnU8oWLWGEWFZYWTY4DL-BPL87KqOnSFG0Fe2yBrXnerq2KTg/exec";
+    // =========================================================================
+    // CONFIGURATION
+    // =========================================================================
+    // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE:
+    const GOOGLE_SCRIPT_URL = "YOUR_SCRIPT_URL_HERE";
 
-    const challenges = [
-      {
-        technique: "Directed Extinction / Think-No-Think",
-        mode: "Forgetting Obsolete Data",
-        prompt: "You recently updated your laboratory door passcode from 4821 to 9104. When walking up to the door, 4821 pops into your head. According to Anderson's Think/No-Think paradigm, what is the best move to accelerate forgetting the old code?",
-        options: [
-          "Deliberately analyze why 4821 was memorable.",
-          "Consciously halt retrieval immediately and refuse to rehearse 4821, focusing solely on 9104.",
-          "Keep repeating 4821 followed by the word 'WRONG' out loud.",
-          "Avoid opening the door for 24 hours."
-        ],
-        correct: 1,
-        explanation: "Retrieval stoppage (No-Think) actively recruits the prefrontal cortex to down-regulate hippocampal reactivation, progressively degrading the obsolete memory trace."
-      },
-      {
-        technique: "Dual Coding Theory",
-        mode: "Retention Improvement",
-        prompt: "A student needs to memorize the cranial nerves for long-term clinical recall. Which application of Paivio's Dual Coding Theory maximizes retention strength?",
-        options: [
-          "Rereading the bulleted list of 12 nerves five times in silence.",
-          "Pairing each verbal nerve name with an exaggerated anatomical visual sketch and spatial route.",
-          "Writing the names on flashcards using only black text.",
-          "Listening to an audio recording of the names at 2x speed."
-        ],
-        correct: 1,
-        explanation: "Dual coding creates two distinct, additive mental representations (verbal schema + visual/spatial image), doubling the accessible retrieval cues."
-      },
-      {
-        technique: "Memory Reconsolidation Interference",
-        mode: "Intentional Forgetting / Depolarization",
-        prompt: "An intrusive, anxiety-inducing memory of freezing during a past viva keeps popping into your study sessions. How can you intentionally weaken its emotional interference?",
-        options: [
-          "Force yourself to stay panicked while reliving every detail.",
-          "Recall the memory while actively engaging in rhythmic somatic grounding (e.g. bilateral tapping/box breathing) to update the stored trace with a calm physiological state.",
-          "Pretend the exam never happened and ignore all future exams.",
-          "Drink high-caffeine beverages whenever the memory appears."
-        ],
-        correct: 1,
-        explanation: "Recalled memories become neurochemically labile. Introducing a calm somatic state during reactivation alters the affective weight during reconsolidation."
-      },
-      {
-        technique: "Spaced Retrieval (Leitner Mechanism)",
-        mode: "Retention Improvement",
-        prompt: "When is the optimal time to schedule an active recall test on newly learned pharmacology pathways to maximize synaptic consolidation?",
-        options: [
-          "5 minutes after reading, then never again.",
-          "Right when the material is on the verge of being forgotten (e.g. Day 1, Day 3, Day 7).",
-          "Continuously for 6 hours straight the night before the exam.",
-          "Only after you have completely forgotten 100% of the material."
-        ],
-        correct: 1,
-        explanation: "Retrieval effort is most potent when the engram has partially decayed; overcoming this retrieval barrier triggers stronger structural synaptic remodeling."
-      },
-      {
-        technique: "Environmental Cue Stripping",
-        mode: "Forgetting Non-Useful Traces",
-        prompt: "You are trying to break an unproductive study procrastination loop associated with your desk setup. Based on context-dependent memory theory, what is the fastest intervention?",
-        options: [
-          "Rearrange physical desktop cues, change the workspace lighting, and remove visual trigger tabs from your browser.",
-          "Stare at the distracting items until you develop immunity.",
-          "Study at the exact same messy desk with louder music.",
-          "Buy a new textbook."
-        ],
-        correct: 0,
-        explanation: "Stripping environmental retrieval cues dismantles automatic stimulus-response associations in memory."
-      },
-      {
-        technique: "Method of Loci (Memory Palace)",
-        mode: "Retention Improvement",
-        prompt: "Why does anchoring diagnostic criteria along a familiar walking path through your campus improve recall over rote memorization?",
-        options: [
-          "It forces the brain to shut down the hippocampus.",
-          "It exploits our evolutionarily conserved spatial navigation memory grid in the parahippocampal cortex.",
-          "It completely prevents retroactive interference from occurring ever again.",
-          "It turns short-term memory into instant procedural muscle memory."
-        ],
-        correct: 1,
-        explanation: "The Method of Loci repurposes highly developed spatial mapping faculties to index abstract conceptual items."
-      },
-      {
-        technique: "Proactive Interference Shielding",
-        mode: "Retention & Separation",
-        prompt: "You must study two highly similar DSM-5 categories today (e.g., Bipolar I vs. Bipolar II). How do you prevent mutual interference?",
-        options: [
-          "Cram both simultaneously in the same paragraph.",
-          "Interleave distinct visual contrast charts, insert a 15-minute cognitive reset break between them, and emphasize their distinguishing boundary criteria.",
-          "Memorize both in alphabetical order without looking at definitions.",
-          "Study both while multitasking."
-        ],
-        correct: 1,
-        explanation: "Creating distinct conceptual boundaries and temporal spacing mitigates proactive and retroactive competition between similar schemas."
-      },
-      {
-        technique: "Cognitive Reframing & Archiving",
-        mode: "Intentional Forgetting / Cognitive Pruning",
-        prompt: "To permanently discharge working memory load from an unresolved, non-actionable worry, what written cognitive protocol works best?",
-        options: [
-          "Writing a specific one-sentence summary of the lesson learned, marking the file as 'Archived', and scheduling an explicit future review date if needed.",
-          "Writing the worry 50 times in a diary.",
-          "Constantly checking social media to distract yourself.",
-          "Venting about the worry continuously for hours."
-        ],
-        correct: 0,
-        explanation: "The Zeigarnik effect maintains active cognitive tension on open loops. Concluding the problem with an explicit archive plan signals cognitive closure to the brain."
-      },
-      {
-        technique: "Generation Effect & Active Recall",
-        mode: "Retention Improvement",
-        prompt: "Which study behavior produces the highest retention rate over a 30-day period?",
-        options: [
-          "Highlighting 80% of the textbook chapter in yellow.",
-          "Closing the book and writing down key mechanisms from memory, then verifying errors.",
-          "Re-reading the chapter three times back-to-back.",
-          "Reading someone else's pristine summary notes."
-        ],
-        correct: 1,
-        explanation: "Self-generating answers and repairing erroneous retrieval attempts triggers the strongest memory consolidation."
-      },
-      {
-        technique: "Directed Forgetting of Misinformation",
-        mode: "Forgetting Outdated Facts",
-        prompt: "A clinical guideline you learned in 2022 was formally superseded by an updated 2026 protocol. What prevents the outdated 2022 habit from intruding into practice?",
-        options: [
-          "Explicitly pairing the old rule with a mental 'Red X' indicator and immediately rehearsing the updated 2026 protocol as the sole active pathway.",
-          "Refusing to read the 2026 protocol.",
-          "Assuming your brain will automatically delete the 2022 rule without any deliberate substitution.",
-          "Reviewing only the 2022 guideline once a month."
-        ],
-        correct: 0,
-        explanation: "Directed replacement with negative tagging actively inhibits the old trace while strengthening the new target."
-      }
+    const PHASES = [
+      { id: 1, title: "Ingestion & Focus Block", badge: "Phase 1: Active Acquisition", defaultDuration: 10 * 60 },
+      { id: 2, title: "Cold Reconstruction Dump", badge: "Phase 2: Unassisted Retrieval", defaultDuration: 3 * 60 },
+      { id: 3, title: "Gap Audit & Error Patching", badge: "Phase 3: Critical Contrast & Patching", defaultDuration: 2 * 60 }
     ];
 
-    // ==========================================
-    // 2. GAME STATE
-    // ==========================================
-    let currentUser = { name: "", email: "" };
-    let currentRound = 0;
-    let score = 0;
-    let streak = 0;
-    let maxStreak = 0;
-    let correctCount = 0;
+    let currentPhaseIdx = 0;
+    let timerSeconds = PHASES[0].defaultDuration;
+    let timerRunning = false;
     let timerInterval = null;
-    let timeLeft = 15;
-    let roundActive = false;
 
-    function startGame(e) {
+    let studentData = { name: "", email: "" };
+    let sessionData = { topic: "", sourceMaterial: "", coldDump: "", gapAudit: "", timestamp: null };
+    let logbook = JSON.parse(localStorage.getItem('osd_debrief_logs')) || [];
+
+    // =========================================================================
+    // INITIALIZATION & AUTHENTICATION
+    // =========================================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedStudent = JSON.parse(localStorage.getItem('osd_student_data'));
+      if (savedStudent && savedStudent.name && savedStudent.email) {
+        studentData = savedStudent;
+        document.getElementById('auth-modal').classList.add('hidden');
+        document.getElementById('header-student-name').innerText = `Active Agent: ${studentData.name}`;
+        initApp();
+      }
+    });
+
+    function saveStudentData(e) {
       e.preventDefault();
-      currentUser.name = document.getElementById('player-name').value.trim();
-      currentUser.email = document.getElementById('player-email').value.trim();
-
-      if (!currentUser.name || !currentUser.email) return;
-
-      document.getElementById('screen-auth').classList.add('hidden');
-      document.getElementById('screen-game').classList.remove('hidden');
-
-      currentRound = 0;
-      score = 0;
-      streak = 0;
-      maxStreak = 0;
-      correctCount = 0;
-
-      updateHUD();
-      loadRound();
+      studentData.name = document.getElementById('setup-name').value.trim();
+      studentData.email = document.getElementById('setup-email').value.trim();
+      
+      localStorage.setItem('osd_student_data', JSON.stringify(studentData));
+      document.getElementById('auth-modal').classList.add('hidden');
+      document.getElementById('header-student-name').innerText = `Active Agent: ${studentData.name}`;
+      initApp();
     }
 
-    function updateHUD() {
-      document.getElementById('hud-score').innerText = score;
-      document.getElementById('hud-streak').innerText = `🔥 ${streak}`;
+    function initApp() {
+      updateLogCount();
+      resetTimerForCurrentPhase();
+      renderCurrentPhase();
     }
 
-    function loadRound() {
-      if (currentRound >= challenges.length) {
-        finishGame();
-        return;
-      }
-
-      roundActive = true;
-      const ch = challenges[currentRound];
-
-      document.getElementById('round-indicator').innerText = `Round ${currentRound + 1} / ${challenges.length}`;
-      document.getElementById('technique-badge').innerText = ch.technique;
-      document.getElementById('technique-mode').innerText = `Focus: ${ch.mode}`;
-      document.getElementById('challenge-prompt').innerText = ch.prompt;
-
-      const fb = document.getElementById('feedback-box');
-      fb.classList.add('hidden');
-
-      const optionsBox = document.getElementById('options-container');
-      optionsBox.innerHTML = ch.options.map((opt, idx) => `
-        <button onclick="handleAnswer(${idx})" class="option-btn w-full text-left p-3 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-xs text-slate-200 transition">
-          <span class="font-bold text-indigo-400 mr-2">${String.fromCharCode(65 + idx)}.</span> ${opt}
-        </button>
-      `).join('');
-
-      timeLeft = 15;
-      document.getElementById('round-timer').innerText = `${timeLeft}s`;
-      clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        document.getElementById('round-timer').innerText = `${timeLeft}s`;
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          if (roundActive) handleAnswer(-1);
-        }
-      }, 1000);
+    // =========================================================================
+    // AUDIO FEEDBACK
+    // =========================================================================
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playBeep(freq = 880, type = "sine", duration = 0.15) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    }
+    function triggerPhaseChime() {
+      playBeep(587.33, 'triangle', 0.1);
+      setTimeout(() => playBeep(880, 'triangle', 0.25), 120);
     }
 
-    function handleAnswer(selectedIdx) {
-      if (!roundActive) return;
-      roundActive = false;
-      clearInterval(timerInterval);
+    // =========================================================================
+    // TIMER ENGINE
+    // =========================================================================
+    function formatTime(totalSecs) {
+      const m = Math.floor(totalSecs / 60).toString().padStart(2, '0');
+      const s = (totalSecs % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
 
-      const ch = challenges[currentRound];
-      const isCorrect = (selectedIdx === ch.correct);
-      const fb = document.getElementById('feedback-box');
-      fb.classList.remove('hidden', 'bg-emerald-950/80', 'text-emerald-300', 'border-emerald-800', 'bg-rose-950/80', 'text-rose-300', 'border-rose-800');
+    function updateTimerDisplay() {
+      document.getElementById('timer-display').innerText = formatTime(timerSeconds);
+    }
 
-      const btns = document.querySelectorAll('.option-btn');
-
-      if (isCorrect) {
-        correctCount++;
-        streak++;
-        if (streak > maxStreak) maxStreak = streak;
-        const roundPoints = 100 + (timeLeft * 10) + (streak * 20);
-        score += roundPoints;
-
-        if (btns[selectedIdx]) {
-          btns[selectedIdx].classList.add('bg-emerald-900/60', 'border-emerald-500', 'text-emerald-200');
-        }
-
-        fb.classList.add('bg-emerald-950/80', 'text-emerald-300', 'border-emerald-800');
-        fb.innerHTML = `<strong>⚡ Correct (+${roundPoints} pts)!</strong> ${ch.explanation}`;
+    function toggleTimer() {
+      const btn = document.getElementById('btn-toggle-timer');
+      if (timerRunning) {
+        clearInterval(timerInterval);
+        timerRunning = false;
+        btn.innerText = "Resume";
+        btn.classList.remove('bg-emerald-600', 'text-slate-950');
+        btn.classList.add('bg-slate-800', 'text-slate-200');
       } else {
-        streak = 0;
-        if (selectedIdx >= 0 && btns[selectedIdx]) {
-          btns[selectedIdx].classList.add('bg-rose-900/60', 'border-rose-500', 'text-rose-200');
-        }
-        if (btns[ch.correct]) {
-          btns[ch.correct].classList.add('bg-emerald-900/60', 'border-emerald-500', 'text-emerald-200');
-        }
+        timerRunning = true;
+        btn.innerText = "Pause";
+        btn.classList.add('bg-emerald-600', 'text-slate-950');
+        btn.classList.remove('bg-slate-800', 'text-slate-200');
+        
+        timerInterval = setInterval(() => {
+          if (timerSeconds > 0) {
+            timerSeconds--;
+            updateTimerDisplay();
+          } else {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            triggerPhaseChime();
+            skipPhase();
+          }
+        }, 1000);
+      }
+    }
 
-        fb.classList.add('bg-rose-950/80', 'text-rose-300', 'border-rose-800');
-        fb.innerHTML = `<strong>✕ ${selectedIdx === -1 ? 'Time Expired!' : 'Incorrect.'}</strong> ${ch.explanation}`;
+    function resetTimerForCurrentPhase() {
+      clearInterval(timerInterval);
+      timerRunning = false;
+      timerSeconds = PHASES[currentPhaseIdx].defaultDuration;
+      updateTimerDisplay();
+      const btn = document.getElementById('btn-toggle-timer');
+      btn.innerText = "Start";
+      btn.classList.remove('bg-emerald-600', 'text-slate-950');
+      btn.classList.add('bg-slate-800', 'text-slate-200');
+    }
+
+    // =========================================================================
+    // PHASE CONTROLLER
+    // =========================================================================
+    function renderCurrentPhase() {
+      const phase = PHASES[currentPhaseIdx];
+      document.getElementById('phase-badge').innerText = phase.badge;
+      document.getElementById('phase-title').innerText = phase.title;
+
+      for (let i = 0; i < 3; i++) {
+        const pip = document.getElementById(`pip-phase-${i + 1}`);
+        pip.className = 'phase-pip p-2.5 rounded-xl border transition flex items-center justify-between text-xs font-semibold ';
+        if (i === currentPhaseIdx) pip.classList.add('border-emerald-500', 'bg-emerald-950/30', 'text-emerald-300');
+        else if (i < currentPhaseIdx) pip.classList.add('border-slate-800', 'bg-slate-900/60', 'text-slate-400');
+        else pip.classList.add('border-slate-900', 'bg-slate-950/40', 'text-slate-600');
       }
 
-      updateHUD();
+      const container = document.getElementById('workspace-dynamic');
 
+      if (currentPhaseIdx === 0) {
+        container.innerHTML = `
+          <div class="space-y-4 fade-in">
+            <div>
+              <label class="text-xs font-bold text-slate-300 block mb-1">Target Brief / Concept Identifier</label>
+              <input id="input-topic" type="text" value="${escapeHtml(sessionData.topic)}" placeholder="e.g., DSM-5 Criteria for PTSD or Starling's Law of the Heart" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-emerald-500" />
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="text-xs font-bold text-slate-300">Source Dossier / Reference Material</label>
+                <span class="text-[11px] text-slate-500">Keep it concise. You will not see this in Step 2.</span>
+              </div>
+              <textarea id="input-source" rows="8" placeholder="Paste or summarize key formulas, symptoms, operational steps, or diagnostic markers..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 mono leading-relaxed focus:outline-none focus:border-emerald-500">${escapeHtml(sessionData.sourceMaterial)}</textarea>
+            </div>
+            <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-850 flex items-center justify-between text-xs text-slate-400">
+              <span class="flex items-center gap-2"><span class="text-emerald-400">●</span> Read with high cognitive intensity. Avoid passive verbatim rereading.</span>
+              <button onclick="advanceToPhase2()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-lg text-xs transition">Lock Source & Go Cold ➔</button>
+            </div>
+          </div>
+        `;
+      } else if (currentPhaseIdx === 1) {
+        container.innerHTML = `
+          <div class="space-y-4 fade-in">
+            <div class="p-3 bg-amber-950/30 border border-amber-800/40 rounded-xl flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2 text-amber-300 font-semibold"><span>🔒</span> SOURCE NOTES ENCRYPTED & HIDDEN</div>
+              <span class="text-slate-400 text-[11px]">Reconstruct cold. Write flowcharts, reverse sequences, or keywords.</span>
+            </div>
+            <div>
+              <label class="text-xs font-bold text-slate-300 block mb-1">Unassisted Cold Extraction Scratchpad</label>
+              <textarea id="input-cold" rows="10" placeholder="Type everything retrieved from memory immediately..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-xs text-amber-100 mono leading-relaxed focus:outline-none focus:border-amber-500">${escapeHtml(sessionData.coldDump)}</textarea>
+            </div>
+            <div class="flex justify-end">
+              <button onclick="advanceToPhase3()" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded-lg text-xs transition">Halt Retrieval & Audit Gaps ➔</button>
+            </div>
+          </div>
+        `;
+        setTimeout(() => document.getElementById('input-cold')?.focus(), 50);
+      } else if (currentPhaseIdx === 2) {
+        container.innerHTML = `
+          <div class="space-y-4 fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div class="space-y-1">
+                <div class="flex items-center justify-between"><span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Original Source Reference</span></div>
+                <div class="w-full h-48 overflow-y-auto bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 mono leading-relaxed whitespace-pre-wrap select-none">${escapeHtml(sessionData.sourceMaterial || "No source provided.")}</div>
+              </div>
+              <div class="space-y-1">
+                <div class="flex items-center justify-between"><span class="text-[11px] font-bold text-amber-400 uppercase tracking-wider">Your Cold Reconstruction</span></div>
+                <div class="w-full h-48 overflow-y-auto bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-amber-100 mono leading-relaxed whitespace-pre-wrap select-none">${escapeHtml(sessionData.coldDump || "No cold notes typed.")}</div>
+              </div>
+            </div>
+            <div>
+              <label class="text-xs font-bold text-indigo-300 block mb-1">Gap Audit: What was missed, omitted, or hallucinated?</label>
+              <textarea id="input-audit" rows="3" placeholder="e.g., Missed the secondary compensatory pathway. Synapses patched." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">${escapeHtml(sessionData.gapAudit)}</textarea>
+            </div>
+            <div class="flex items-center justify-between">
+              <span id="sync-status" class="text-xs font-semibold text-emerald-400 opacity-0 transition-opacity">Saving to remote logs...</span>
+              <button onclick="finalizeDebrief()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg text-xs transition shadow-lg flex items-center gap-1.5">
+                <span>✓</span> Save Debrief to Archive
+              </button>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // =========================================================================
+    // WORKFLOW & API SYNC
+    // =========================================================================
+    function advanceToPhase2() {
+      sessionData.topic = document.getElementById('input-topic')?.value.trim() || "Untitled Mission Debrief";
+      sessionData.sourceMaterial = document.getElementById('input-source')?.value.trim();
+      currentPhaseIdx = 1;
+      resetTimerForCurrentPhase();
+      renderCurrentPhase();
+      toggleTimer();
+    }
+
+    function advanceToPhase3() {
+      sessionData.coldDump = document.getElementById('input-cold')?.value.trim();
+      currentPhaseIdx = 2;
+      resetTimerForCurrentPhase();
+      renderCurrentPhase();
+      toggleTimer();
+    }
+
+    function skipPhase() {
+      if (currentPhaseIdx === 0) advanceToPhase2();
+      else if (currentPhaseIdx === 1) advanceToPhase3();
+      else if (currentPhaseIdx === 2) finalizeDebrief();
+    }
+
+    function finalizeDebrief() {
+      sessionData.gapAudit = document.getElementById('input-audit')?.value.trim();
+      sessionData.timestamp = new Date().toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+      // Save locally
+      logbook.unshift({ ...sessionData, id: Date.now() });
+      localStorage.setItem('osd_debrief_logs', JSON.stringify(logbook));
+      updateLogCount();
+
+      // Show sync text
+      const statusText = document.getElementById('sync-status');
+      if (statusText) statusText.style.opacity = "1";
+
+      // Sync to Google Sheets
+      syncDebriefToGoogleSheets(sessionData, studentData.name, studentData.email);
+
+      // Complete Screen
       setTimeout(() => {
-        currentRound++;
-        loadRound();
-      }, 2500);
+        const container = document.getElementById('workspace-dynamic');
+        document.getElementById('phase-title').innerText = "Debrief Complete & Logged";
+        document.getElementById('phase-badge').innerText = "Synaptic Trace Consolidated";
+        
+        clearInterval(timerInterval);
+        timerRunning = false;
+        document.getElementById('timer-display').innerText = "00:00";
+
+        container.innerHTML = `
+          <div class="text-center py-8 space-y-4 fade-in">
+            <div class="h-14 w-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-2xl flex items-center justify-center mx-auto">✓</div>
+            <div>
+              <h3 class="text-base font-bold text-white">Extraction Archived</h3>
+              <p class="text-xs text-slate-400 max-w-sm mx-auto mt-1">Topic: <strong class="text-slate-200">${escapeHtml(sessionData.topic)}</strong></p>
+            </div>
+            <div class="flex justify-center gap-2 pt-2">
+              <button onclick="toggleLogbook(true)" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-lg transition">Review in Logbook</button>
+              <button onclick="resetToNewDebrief()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 text-xs font-bold rounded-lg transition shadow-md">Start Next Debrief</button>
+            </div>
+          </div>
+        `;
+      }, 800);
     }
 
-    function finishGame() {
-      document.getElementById('screen-game').classList.add('hidden');
-      document.getElementById('screen-results').classList.remove('hidden');
+    function syncDebriefToGoogleSheets(data, name, email) {
+      if (GOOGLE_SCRIPT_URL === "YOUR_SCRIPT_URL_HERE") return;
 
-      const accuracy = Math.round((correctCount / challenges.length) * 100);
-
-      document.getElementById('res-score').innerText = score;
-      document.getElementById('res-acc').innerText = `${accuracy}%`;
-      document.getElementById('res-streak').innerText = maxStreak;
-
-      if (accuracy >= 70) {
-        confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
-      }
-
-      syncToGoogleSheets(score, accuracy, maxStreak);
-    }
-
-    function syncToGoogleSheets(finalScore, accuracy, maxStreakVal) {
       const payload = {
-        name: currentUser.name,
-        email: currentUser.email,
-        score: finalScore,
-        accuracy: accuracy,
-        streak: maxStreakVal
+        name: name,
+        email: email,
+        topic: data.topic,
+        sourceMaterial: data.sourceMaterial,
+        coldDump: data.coldDump,
+        gapAudit: data.gapAudit
       };
 
-      // Sending as plain text payload prevents CORS preflight issues on Google Apps Script
       fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
-        mode: "no-cors",
+        mode: "no-cors", // Crucial for preventing CORS blocks
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(payload)
-      }).then(() => {
-        document.getElementById('result-summary').innerText = "✓ Score successfully recorded on class leaderboard!";
-      }).catch(err => {
-        console.error("Sync error:", err);
-      });
+      }).catch(err => console.error("Sync error:", err));
     }
 
-    // ==========================================
-    // 3. LEADERBOARD SYSTEM
-    // ==========================================
-    function openLeaderboard() {
-      const modal = document.getElementById('leaderboard-modal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      fetchLeaderboardData();
+    function resetToNewDebrief() {
+      sessionData = { topic: "", sourceMaterial: "", coldDump: "", gapAudit: "", timestamp: null };
+      currentPhaseIdx = 0;
+      resetTimerForCurrentPhase();
+      renderCurrentPhase();
     }
 
-    function closeLeaderboard() {
-      const modal = document.getElementById('leaderboard-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
+    // =========================================================================
+    // LOGBOOK VIEWER
+    // =========================================================================
+    function updateLogCount() { document.getElementById('log-count').innerText = logbook.length; }
+    
+    function toggleLogbook(show) {
+      const modal = document.getElementById('logbook-modal');
+      modal.classList.toggle('hidden', !show);
+      modal.classList.toggle('flex', show);
+      if (show) renderLogbookFeed();
     }
 
-    function fetchLeaderboardData() {
-      const list = document.getElementById('leaderboard-list');
-      list.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Connecting to Google Sheet...</p>`;
+    function renderLogbookFeed() {
+      const feed = document.getElementById('logbook-feed');
+      if (logbook.length === 0) {
+        feed.innerHTML = `<div class="text-center py-8 text-slate-500 text-xs">No completed debriefs found.</div>`;
+        return;
+      }
+      feed.innerHTML = logbook.map(entry => `
+        <div class="p-3.5 bg-slate-950 border border-slate-800 rounded-xl space-y-2 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-emerald-400">${escapeHtml(entry.topic)}</span>
+            <span class="text-[10px] text-slate-500 mono">${entry.timestamp}</span>
+          </div>
+          <div class="p-2 bg-slate-900 rounded-lg text-slate-300 mono text-[11px] whitespace-pre-wrap"><strong class="text-amber-300 block text-[10px] uppercase">Reconstruction:</strong>${escapeHtml(entry.coldDump || "N/A")}</div>
+          ${entry.gapAudit ? `<div class="text-[11px] text-slate-400"><strong class="text-indigo-400">Gap Fix:</strong> ${escapeHtml(entry.gapAudit)}</div>` : ''}
+        </div>
+      `).join('');
+    }
 
-      fetch(GOOGLE_SCRIPT_URL)
-        .then(res => res.json())
-        .then(data => {
-          if (!data.leaderboard || data.leaderboard.length === 0) {
-            list.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">No scores submitted yet. Be the first to play!</p>`;
-            return;
-          }
+    function clearAllLogs() {
+      if (!confirm("Clear your debrief history?")) return;
+      logbook = [];
+      localStorage.removeItem('osd_debrief_logs');
+      updateLogCount();
+      renderLogbookFeed();
+    }
 
-          list.innerHTML = data.leaderboard.map((player, idx) => `
-            <div class="flex items-center justify-between p-2.5 rounded-xl ${idx === 0 ? 'bg-amber-950/30 border border-amber-800/50' : 'bg-slate-950 border border-slate-800/80'} text-xs">
-              <div class="flex items-center gap-3">
-                <span class="font-extrabold w-5 text-center ${idx === 0 ? 'text-amber-400' : idx === 1 ? 'text-slate-300' : idx === 2 ? 'text-amber-600' : 'text-slate-500'}">
-                  #${idx + 1}
-                </span>
-                <span class="font-bold text-slate-100">${player.name}</span>
-              </div>
-              <div class="flex items-center gap-3 font-semibold">
-                <span class="text-slate-400 text-[11px]">Acc: ${player.accuracy}</span>
-                <span class="text-indigo-400 font-extrabold">${player.score} pts</span>
-              </div>
-            </div>
-          `).join('');
-        })
-        .catch(err => {
-          list.innerHTML = `
-            <div class="p-3 bg-slate-950 border border-slate-800 rounded-xl text-center">
-              <p class="text-xs text-amber-300 font-semibold">Scores are logging directly to Sheet</p>
-              <p class="text-[11px] text-slate-400 mt-1">If the in-app view is blocked by browser cross-origin policies, check your Sheet tab to see the live records.</p>
-            </div>
-          `;
-        });
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
   </script>
 </body>
