@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MnemoWars: Memory Retention & Forgetting Arena</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .fade-in { animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col items-center justify-between p-4">
+
+  <!-- Header & Stats Bar -->
+  <header class="w-full max-w-4xl flex items-center justify-between py-3 border-b border-slate-800">
+    <div class="flex items-center gap-3">
+      <div class="h-10 w-10 rounded-xl bg-indigo-600 flex items-center justify-center font-black text-white shadow-lg shadow-indigo-500/20">
+        ⚡
+      </div>
+      <div>
+        <h1 class="text-base font-extrabold text-white leading-tight tracking-tight">MnemoWars Arena</h1>
+        <p class="text-xs text-slate-400">Retention Mastery vs. Directed Extinction</p>
+      </div>
+    </div>
+
+    <!-- Live Score HUD -->
+    <div class="flex items-center gap-3">
+      <div class="px-3 py-1 bg-slate-900 border border-slate-800 rounded-lg text-center">
+        <span class="text-[10px] text-slate-400 uppercase font-bold block">Score</span>
+        <span id="hud-score" class="text-sm font-black text-indigo-400">0</span>
+      </div>
+      <div class="px-3 py-1 bg-slate-900 border border-slate-800 rounded-lg text-center">
+        <span class="text-[10px] text-slate-400 uppercase font-bold block">Streak</span>
+        <span id="hud-streak" class="text-sm font-black text-amber-400">🔥 0</span>
+      </div>
+      <button onclick="openLeaderboard()" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-xs font-bold text-white transition flex items-center gap-1.5 shadow-md shadow-indigo-600/30">
+        🏆 Leaderboard
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Arena Container -->
+  <main class="w-full max-w-2xl my-auto py-6">
+
+    <!-- SCREEN 1: Player Onboarding -->
+    <section id="screen-auth" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl text-center fade-in">
+      <div class="w-14 h-14 bg-indigo-950 border border-indigo-700/50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl">
+        🧠
+      </div>
+      <h2 class="text-xl font-extrabold text-white">Enter the Memory Arena</h2>
+      <p class="text-xs text-slate-400 max-w-sm mx-auto mt-1 mb-6">
+        Test your mastery over active recall, dual coding, and intentional forgetting under real-time cognitive pressure.
+      </p>
+
+      <form id="auth-form" onsubmit="startGame(event)" class="space-y-3 max-w-sm mx-auto text-left">
+        <div>
+          <label class="text-xs font-semibold text-slate-300 block mb-1">Student Full Name</label>
+          <input id="player-name" required type="text" placeholder="e.g. Sara Ahmed" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-indigo-500" />
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-slate-300 block mb-1">Institutional Email (For Weekly Drills)</label>
+          <input id="player-email" required type="email" placeholder="e.g. sara@student.university.edu" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-indigo-500" />
+        </div>
+        <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-xs font-bold text-white transition shadow-lg shadow-indigo-600/30 mt-2">
+          Start Challenge (10 Rounds)
+        </button>
+      </form>
+    </section>
+
+    <!-- SCREEN 2: Gamified Drill Arena -->
+    <section id="screen-game" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl fade-in space-y-5">
+      <!-- Progress and Timer -->
+      <div class="flex items-center justify-between">
+        <span id="round-indicator" class="text-xs font-bold text-slate-400 uppercase tracking-wider">Round 1 / 10</span>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-slate-400">Timer:</span>
+          <span id="round-timer" class="text-xs font-extrabold px-2 py-0.5 rounded bg-rose-950 border border-rose-800 text-rose-300">15s</span>
+        </div>
+      </div>
+
+      <!-- Technique Category Badge -->
+      <div class="flex items-center gap-2">
+        <span id="technique-badge" class="text-[11px] font-bold px-2.5 py-1 rounded-md bg-indigo-950 text-indigo-300 border border-indigo-800">
+          Dual Coding Drill
+        </span>
+        <span id="technique-mode" class="text-[11px] font-semibold text-slate-400">
+          Target: Retain Essential Information
+        </span>
+      </div>
+
+      <!-- Challenge Question / Prompt Box -->
+      <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 min-h-[110px] flex items-center justify-center text-center">
+        <p id="challenge-prompt" class="text-sm font-semibold text-slate-100 leading-relaxed">
+          Loading challenge...
+        </p>
+      </div>
+
+      <!-- Multiple Choice Options -->
+      <div id="options-container" class="grid grid-cols-1 gap-2.5">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Explanatory Feedback Box -->
+      <div id="feedback-box" class="hidden p-3.5 rounded-xl border text-xs leading-relaxed fade-in"></div>
+    </section>
+
+    <!-- SCREEN 3: Result & Leaderboard Sync Screen -->
+    <section id="screen-results" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl text-center fade-in space-y-4">
+      <div class="w-14 h-14 bg-emerald-950 border border-emerald-700/50 rounded-2xl flex items-center justify-center mx-auto text-2xl">
+        🎉
+      </div>
+      <h2 class="text-xl font-extrabold text-white">Drill Complete!</h2>
+      <p id="result-summary" class="text-xs text-slate-400 max-w-sm mx-auto">
+        Your cognitive score is being synced with the class Google Sheet.
+      </p>
+
+      <div class="grid grid-cols-3 gap-3 max-w-md mx-auto py-2">
+        <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl">
+          <span class="text-[10px] text-slate-400 uppercase font-bold block">Final Score</span>
+          <span id="res-score" class="text-lg font-black text-indigo-400">0</span>
+        </div>
+        <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl">
+          <span class="text-[10px] text-slate-400 uppercase font-bold block">Accuracy</span>
+          <span id="res-acc" class="text-lg font-black text-emerald-400">0%</span>
+        </div>
+        <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl">
+          <span class="text-[10px] text-slate-400 uppercase font-bold block">Max Streak</span>
+          <span id="res-streak" class="text-lg font-black text-amber-400">0</span>
+        </div>
+      </div>
+
+      <div class="flex gap-2 max-w-md mx-auto pt-2">
+        <button onclick="openLeaderboard()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-bold text-slate-200 transition">
+          View Class Standings
+        </button>
+        <button onclick="location.reload()" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-xs font-bold text-white transition shadow-lg shadow-indigo-600/30">
+          Play Again
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- LEADERBOARD MODAL -->
+  <div id="leaderboard-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div>
+          <h3 class="font-extrabold text-white text-base flex items-center gap-2">
+            <span>🏆</span> Class Leaderboard
+          </h3>
+          <p class="text-[11px] text-slate-400">Live rankings pulled directly from Google Sheets backend</p>
+        </div>
+        <button onclick="closeLeaderboard()" class="text-slate-400 hover:text-white text-xs font-bold px-2 py-1 bg-slate-800 rounded-lg">✕</button>
+      </div>
+
+      <!-- Leaderboard List -->
+      <div id="leaderboard-list" class="space-y-2 max-h-72 overflow-y-auto pr-1">
+        <p class="text-xs text-slate-400 text-center py-6">Fetching live standings...</p>
+      </div>
+
+      <button onclick="closeLeaderboard()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-bold text-slate-200 transition">
+        Close Standings
+      </button>
+    </div>
+  </div>
+
+  <footer class="text-[11px] text-slate-600 text-center py-2">
+    Behavioral Sciences Memory Lab • Continuous Spaced Retrieval & Directed Pruning
+  </footer>
+
+  <script>
+    // ==========================================
+    // 1. CONFIGURATION & URL CONNECTION
+    // ==========================================
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw5z89ZCaoiaZcOv3R-ZcnU8oWLWGEWFZYWTY4DL-BPL87KqOnSFG0Fe2yBrXnerq2KTg/exec";
+
+    const challenges = [
+      {
+        technique: "Directed Extinction / Think-No-Think",
+        mode: "Forgetting Obsolete Data",
+        prompt: "You recently updated your laboratory door passcode from 4821 to 9104. When walking up to the door, 4821 pops into your head. According to Anderson's Think/No-Think paradigm, what is the best move to accelerate forgetting the old code?",
+        options: [
+          "Deliberately analyze why 4821 was memorable.",
+          "Consciously halt retrieval immediately and refuse to rehearse 4821, focusing solely on 9104.",
+          "Keep repeating 4821 followed by the word 'WRONG' out loud.",
+          "Avoid opening the door for 24 hours."
+        ],
+        correct: 1,
+        explanation: "Retrieval stoppage (No-Think) actively recruits the prefrontal cortex to down-regulate hippocampal reactivation, progressively degrading the obsolete memory trace."
+      },
+      {
+        technique: "Dual Coding Theory",
+        mode: "Retention Improvement",
+        prompt: "A student needs to memorize the cranial nerves for long-term clinical recall. Which application of Paivio's Dual Coding Theory maximizes retention strength?",
+        options: [
+          "Rereading the bulleted list of 12 nerves five times in silence.",
+          "Pairing each verbal nerve name with an exaggerated anatomical visual sketch and spatial route.",
+          "Writing the names on flashcards using only black text.",
+          "Listening to an audio recording of the names at 2x speed."
+        ],
+        correct: 1,
+        explanation: "Dual coding creates two distinct, additive mental representations (verbal schema + visual/spatial image), doubling the accessible retrieval cues."
+      },
+      {
+        technique: "Memory Reconsolidation Interference",
+        mode: "Intentional Forgetting / Depolarization",
+        prompt: "An intrusive, anxiety-inducing memory of freezing during a past viva keeps popping into your study sessions. How can you intentionally weaken its emotional interference?",
+        options: [
+          "Force yourself to stay panicked while reliving every detail.",
+          "Recall the memory while actively engaging in rhythmic somatic grounding (e.g. bilateral tapping/box breathing) to update the stored trace with a calm physiological state.",
+          "Pretend the exam never happened and ignore all future exams.",
+          "Drink high-caffeine beverages whenever the memory appears."
+        ],
+        correct: 1,
+        explanation: "Recalled memories become neurochemically labile. Introducing a calm somatic state during reactivation alters the affective weight during reconsolidation."
+      },
+      {
+        technique: "Spaced Retrieval (Leitner Mechanism)",
+        mode: "Retention Improvement",
+        prompt: "When is the optimal time to schedule an active recall test on newly learned pharmacology pathways to maximize synaptic consolidation?",
+        options: [
+          "5 minutes after reading, then never again.",
+          "Right when the material is on the verge of being forgotten (e.g. Day 1, Day 3, Day 7).",
+          "Continuously for 6 hours straight the night before the exam.",
+          "Only after you have completely forgotten 100% of the material."
+        ],
+        correct: 1,
+        explanation: "Retrieval effort is most potent when the engram has partially decayed; overcoming this retrieval barrier triggers stronger structural synaptic remodeling."
+      },
+      {
+        technique: "Environmental Cue Stripping",
+        mode: "Forgetting Non-Useful Traces",
+        prompt: "You are trying to break an unproductive study procrastination loop associated with your desk setup. Based on context-dependent memory theory, what is the fastest intervention?",
+        options: [
+          "Rearrange physical desktop cues, change the workspace lighting, and remove visual trigger tabs from your browser.",
+          "Stare at the distracting items until you develop immunity.",
+          "Study at the exact same messy desk with louder music.",
+          "Buy a new textbook."
+        ],
+        correct: 0,
+        explanation: "Stripping environmental retrieval cues dismantles automatic stimulus-response associations in memory."
+      },
+      {
+        technique: "Method of Loci (Memory Palace)",
+        mode: "Retention Improvement",
+        prompt: "Why does anchoring diagnostic criteria along a familiar walking path through your campus improve recall over rote memorization?",
+        options: [
+          "It forces the brain to shut down the hippocampus.",
+          "It exploits our evolutionarily conserved spatial navigation memory grid in the parahippocampal cortex.",
+          "It completely prevents retroactive interference from occurring ever again.",
+          "It turns short-term memory into instant procedural muscle memory."
+        ],
+        correct: 1,
+        explanation: "The Method of Loci repurposes highly developed spatial mapping faculties to index abstract conceptual items."
+      },
+      {
+        technique: "Proactive Interference Shielding",
+        mode: "Retention & Separation",
+        prompt: "You must study two highly similar DSM-5 categories today (e.g., Bipolar I vs. Bipolar II). How do you prevent mutual interference?",
+        options: [
+          "Cram both simultaneously in the same paragraph.",
+          "Interleave distinct visual contrast charts, insert a 15-minute cognitive reset break between them, and emphasize their distinguishing boundary criteria.",
+          "Memorize both in alphabetical order without looking at definitions.",
+          "Study both while multitasking."
+        ],
+        correct: 1,
+        explanation: "Creating distinct conceptual boundaries and temporal spacing mitigates proactive and retroactive competition between similar schemas."
+      },
+      {
+        technique: "Cognitive Reframing & Archiving",
+        mode: "Intentional Forgetting / Cognitive Pruning",
+        prompt: "To permanently discharge working memory load from an unresolved, non-actionable worry, what written cognitive protocol works best?",
+        options: [
+          "Writing a specific one-sentence summary of the lesson learned, marking the file as 'Archived', and scheduling an explicit future review date if needed.",
+          "Writing the worry 50 times in a diary.",
+          "Constantly checking social media to distract yourself.",
+          "Venting about the worry continuously for hours."
+        ],
+        correct: 0,
+        explanation: "The Zeigarnik effect maintains active cognitive tension on open loops. Concluding the problem with an explicit archive plan signals cognitive closure to the brain."
+      },
+      {
+        technique: "Generation Effect & Active Recall",
+        mode: "Retention Improvement",
+        prompt: "Which study behavior produces the highest retention rate over a 30-day period?",
+        options: [
+          "Highlighting 80% of the textbook chapter in yellow.",
+          "Closing the book and writing down key mechanisms from memory, then verifying errors.",
+          "Re-reading the chapter three times back-to-back.",
+          "Reading someone else's pristine summary notes."
+        ],
+        correct: 1,
+        explanation: "Self-generating answers and repairing erroneous retrieval attempts triggers the strongest memory consolidation."
+      },
+      {
+        technique: "Directed Forgetting of Misinformation",
+        mode: "Forgetting Outdated Facts",
+        prompt: "A clinical guideline you learned in 2022 was formally superseded by an updated 2026 protocol. What prevents the outdated 2022 habit from intruding into practice?",
+        options: [
+          "Explicitly pairing the old rule with a mental 'Red X' indicator and immediately rehearsing the updated 2026 protocol as the sole active pathway.",
+          "Refusing to read the 2026 protocol.",
+          "Assuming your brain will automatically delete the 2022 rule without any deliberate substitution.",
+          "Reviewing only the 2022 guideline once a month."
+        ],
+        correct: 0,
+        explanation: "Directed replacement with negative tagging actively inhibits the old trace while strengthening the new target."
+      }
+    ];
+
+    // ==========================================
+    // 2. GAME STATE
+    // ==========================================
+    let currentUser = { name: "", email: "" };
+    let currentRound = 0;
+    let score = 0;
+    let streak = 0;
+    let maxStreak = 0;
+    let correctCount = 0;
+    let timerInterval = null;
+    let timeLeft = 15;
+    let roundActive = false;
+
+    function startGame(e) {
+      e.preventDefault();
+      currentUser.name = document.getElementById('player-name').value.trim();
+      currentUser.email = document.getElementById('player-email').value.trim();
+
+      if (!currentUser.name || !currentUser.email) return;
+
+      document.getElementById('screen-auth').classList.add('hidden');
+      document.getElementById('screen-game').classList.remove('hidden');
+
+      currentRound = 0;
+      score = 0;
+      streak = 0;
+      maxStreak = 0;
+      correctCount = 0;
+
+      updateHUD();
+      loadRound();
+    }
+
+    function updateHUD() {
+      document.getElementById('hud-score').innerText = score;
+      document.getElementById('hud-streak').innerText = `🔥 ${streak}`;
+    }
+
+    function loadRound() {
+      if (currentRound >= challenges.length) {
+        finishGame();
+        return;
+      }
+
+      roundActive = true;
+      const ch = challenges[currentRound];
+
+      document.getElementById('round-indicator').innerText = `Round ${currentRound + 1} / ${challenges.length}`;
+      document.getElementById('technique-badge').innerText = ch.technique;
+      document.getElementById('technique-mode').innerText = `Focus: ${ch.mode}`;
+      document.getElementById('challenge-prompt').innerText = ch.prompt;
+
+      const fb = document.getElementById('feedback-box');
+      fb.classList.add('hidden');
+
+      const optionsBox = document.getElementById('options-container');
+      optionsBox.innerHTML = ch.options.map((opt, idx) => `
+        <button onclick="handleAnswer(${idx})" class="option-btn w-full text-left p-3 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-xs text-slate-200 transition">
+          <span class="font-bold text-indigo-400 mr-2">${String.fromCharCode(65 + idx)}.</span> ${opt}
+        </button>
+      `).join('');
+
+      timeLeft = 15;
+      document.getElementById('round-timer').innerText = `${timeLeft}s`;
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById('round-timer').innerText = `${timeLeft}s`;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          if (roundActive) handleAnswer(-1);
+        }
+      }, 1000);
+    }
+
+    function handleAnswer(selectedIdx) {
+      if (!roundActive) return;
+      roundActive = false;
+      clearInterval(timerInterval);
+
+      const ch = challenges[currentRound];
+      const isCorrect = (selectedIdx === ch.correct);
+      const fb = document.getElementById('feedback-box');
+      fb.classList.remove('hidden', 'bg-emerald-950/80', 'text-emerald-300', 'border-emerald-800', 'bg-rose-950/80', 'text-rose-300', 'border-rose-800');
+
+      const btns = document.querySelectorAll('.option-btn');
+
+      if (isCorrect) {
+        correctCount++;
+        streak++;
+        if (streak > maxStreak) maxStreak = streak;
+        const roundPoints = 100 + (timeLeft * 10) + (streak * 20);
+        score += roundPoints;
+
+        if (btns[selectedIdx]) {
+          btns[selectedIdx].classList.add('bg-emerald-900/60', 'border-emerald-500', 'text-emerald-200');
+        }
+
+        fb.classList.add('bg-emerald-950/80', 'text-emerald-300', 'border-emerald-800');
+        fb.innerHTML = `<strong>⚡ Correct (+${roundPoints} pts)!</strong> ${ch.explanation}`;
+      } else {
+        streak = 0;
+        if (selectedIdx >= 0 && btns[selectedIdx]) {
+          btns[selectedIdx].classList.add('bg-rose-900/60', 'border-rose-500', 'text-rose-200');
+        }
+        if (btns[ch.correct]) {
+          btns[ch.correct].classList.add('bg-emerald-900/60', 'border-emerald-500', 'text-emerald-200');
+        }
+
+        fb.classList.add('bg-rose-950/80', 'text-rose-300', 'border-rose-800');
+        fb.innerHTML = `<strong>✕ ${selectedIdx === -1 ? 'Time Expired!' : 'Incorrect.'}</strong> ${ch.explanation}`;
+      }
+
+      updateHUD();
+
+      setTimeout(() => {
+        currentRound++;
+        loadRound();
+      }, 2500);
+    }
+
+    function finishGame() {
+      document.getElementById('screen-game').classList.add('hidden');
+      document.getElementById('screen-results').classList.remove('hidden');
+
+      const accuracy = Math.round((correctCount / challenges.length) * 100);
+
+      document.getElementById('res-score').innerText = score;
+      document.getElementById('res-acc').innerText = `${accuracy}%`;
+      document.getElementById('res-streak').innerText = maxStreak;
+
+      if (accuracy >= 70) {
+        confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
+      }
+
+      syncToGoogleSheets(score, accuracy, maxStreak);
+    }
+
+    function syncToGoogleSheets(finalScore, accuracy, maxStreakVal) {
+      const payload = {
+        name: currentUser.name,
+        email: currentUser.email,
+        score: finalScore,
+        accuracy: accuracy,
+        streak: maxStreakVal
+      };
+
+      // Sending as plain text payload prevents CORS preflight issues on Google Apps Script
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      }).then(() => {
+        document.getElementById('result-summary').innerText = "✓ Score successfully recorded on class leaderboard!";
+      }).catch(err => {
+        console.error("Sync error:", err);
+      });
+    }
+
+    // ==========================================
+    // 3. LEADERBOARD SYSTEM
+    // ==========================================
+    function openLeaderboard() {
+      const modal = document.getElementById('leaderboard-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      fetchLeaderboardData();
+    }
+
+    function closeLeaderboard() {
+      const modal = document.getElementById('leaderboard-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function fetchLeaderboardData() {
+      const list = document.getElementById('leaderboard-list');
+      list.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">Connecting to Google Sheet...</p>`;
+
+      fetch(GOOGLE_SCRIPT_URL)
+        .then(res => res.json())
+        .then(data => {
+          if (!data.leaderboard || data.leaderboard.length === 0) {
+            list.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">No scores submitted yet. Be the first to play!</p>`;
+            return;
+          }
+
+          list.innerHTML = data.leaderboard.map((player, idx) => `
+            <div class="flex items-center justify-between p-2.5 rounded-xl ${idx === 0 ? 'bg-amber-950/30 border border-amber-800/50' : 'bg-slate-950 border border-slate-800/80'} text-xs">
+              <div class="flex items-center gap-3">
+                <span class="font-extrabold w-5 text-center ${idx === 0 ? 'text-amber-400' : idx === 1 ? 'text-slate-300' : idx === 2 ? 'text-amber-600' : 'text-slate-500'}">
+                  #${idx + 1}
+                </span>
+                <span class="font-bold text-slate-100">${player.name}</span>
+              </div>
+              <div class="flex items-center gap-3 font-semibold">
+                <span class="text-slate-400 text-[11px]">Acc: ${player.accuracy}</span>
+                <span class="text-indigo-400 font-extrabold">${player.score} pts</span>
+              </div>
+            </div>
+          `).join('');
+        })
+        .catch(err => {
+          list.innerHTML = `
+            <div class="p-3 bg-slate-950 border border-slate-800 rounded-xl text-center">
+              <p class="text-xs text-amber-300 font-semibold">Scores are logging directly to Sheet</p>
+              <p class="text-[11px] text-slate-400 mt-1">If the in-app view is blocked by browser cross-origin policies, check your Sheet tab to see the live records.</p>
+            </div>
+          `;
+        });
+    }
+  </script>
+</body>
+</html>
