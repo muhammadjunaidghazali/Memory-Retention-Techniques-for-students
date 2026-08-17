@@ -9,7 +9,7 @@
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     body { font-family: 'Plus Jakarta Sans', sans-serif; }
     .mono { font-family: 'JetBrains Mono', monospace; }
-    .fade-in { animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+    .fade-in { animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
@@ -25,19 +25,15 @@
         <div>
           <h1 class="text-sm font-bold text-slate-100 tracking-tight flex items-center gap-2">
             Operational Self-Debrief
-            <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-400 font-normal mono">v1.1</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-400 font-normal mono">Guided Edition</span>
           </h1>
-          <p class="text-[11px] text-slate-500" id="header-student-name">Immediate Cold Reconstruction Tradecraft</p>
+          <p class="text-[11px] text-slate-500" id="header-student-name">Cognitive Mastery & Retention Protocol</p>
         </div>
       </div>
 
-      <!-- Quick Actions -->
       <div class="flex items-center gap-2">
         <button onclick="toggleLogbook(true)" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-850 border border-slate-800 text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
-          <span>📁</span> Logbook (<span id="log-count">0</span>)
-        </button>
-        <button onclick="resetToNewDebrief()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-slate-950 text-xs font-bold transition shadow-sm">
-          + New Debrief
+          <span>📁</span> Archive (<span id="log-count">0</span>)
         </button>
       </div>
     </div>
@@ -50,15 +46,12 @@
     <div class="grid grid-cols-3 gap-2 mb-4 text-xs font-semibold">
       <div id="pip-phase-1" class="phase-pip p-2.5 rounded-xl border border-emerald-500 bg-emerald-950/30 text-emerald-300 flex items-center justify-between transition">
         <span class="flex items-center gap-1.5"><span class="mono">01.</span> Ingestion Block</span>
-        <span class="text-[10px] mono opacity-80">10:00</span>
       </div>
       <div id="pip-phase-2" class="phase-pip p-2.5 rounded-xl border border-slate-850 bg-slate-900/40 text-slate-500 flex items-center justify-between transition">
-        <span class="flex items-center gap-1.5"><span class="mono">02.</span> Cold Reconstruction</span>
-        <span class="text-[10px] mono opacity-80">03:00</span>
+        <span class="flex items-center gap-1.5"><span class="mono">02.</span> Cold Dump</span>
       </div>
       <div id="pip-phase-3" class="phase-pip p-2.5 rounded-xl border border-slate-850 bg-slate-900/40 text-slate-500 flex items-center justify-between transition">
-        <span class="flex items-center gap-1.5"><span class="mono">03.</span> Gap Audit & Fix</span>
-        <span class="text-[10px] mono opacity-80">02:00</span>
+        <span class="flex items-center gap-1.5"><span class="mono">03.</span> Gap Audit</span>
       </div>
     </div>
 
@@ -71,19 +64,18 @@
           <span id="phase-badge" class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800/60">
             Phase 1 of 3: Active Study
           </span>
-          <h2 id="phase-title" class="text-lg font-bold text-white mt-1">Deep Ingestion</h2>
+          <h2 id="phase-title" class="text-xl font-bold text-white mt-1">Deep Ingestion</h2>
         </div>
 
-        <!-- Timer HUD -->
         <div class="flex items-center gap-3">
           <div class="mono text-3xl font-black tracking-widest text-emerald-400 bg-slate-950 px-4 py-1.5 rounded-xl border border-slate-800 shadow-inner" id="timer-display">
             10:00
           </div>
           <div class="flex items-center gap-1.5">
-            <button id="btn-toggle-timer" onclick="toggleTimer()" class="h-10 px-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 transition">
+            <button id="btn-toggle-timer" onclick="toggleTimer()" class="h-10 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 transition">
               Start
             </button>
-            <button onclick="skipPhase()" title="Advance to next phase" class="h-10 px-3 rounded-xl bg-slate-800/60 hover:bg-slate-850 border border-slate-800 text-xs font-semibold text-slate-400 hover:text-white transition">
+            <button onclick="skipPhase()" title="Advance to next phase" class="h-10 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold transition shadow-md">
               Next ➔
             </button>
           </div>
@@ -91,32 +83,29 @@
       </div>
 
       <!-- WORKSPACE AREA: Dynamic Per Phase -->
-      <div id="workspace-dynamic" class="fade-in space-y-4">
+      <div id="workspace-dynamic" class="fade-in space-y-5">
         <!-- Rendered by JavaScript -->
       </div>
     </div>
   </main>
 
   <footer class="border-t border-slate-900 py-3 text-center text-xs text-slate-500 mono">
-    Protocol: No passive reviewing during Step 2. Zero assistance forces synaptic consolidation.
+    Cognitive Training Protocol: Trust the process. Difficulty during retrieval means you are building neural pathways.
   </footer>
 
   <!-- Operator Onboarding Modal (For Name/Email) -->
   <div id="auth-modal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 max-w-sm w-full shadow-2xl space-y-5 fade-in">
-      <div class="flex justify-center mb-2">
-        <div class="h-14 w-14 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center font-bold text-emerald-400 mono text-xl">
-          OSD
-        </div>
-      </div>
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 max-w-md w-full shadow-2xl space-y-5 fade-in">
       <div class="text-center">
-        <h3 class="font-bold text-white text-lg">Initialize Agent Protocol</h3>
-        <p class="text-xs text-slate-400 mt-1">Register to sync your cognitive logs.</p>
+        <h3 class="font-bold text-white text-xl">The Operative's Secret</h3>
+        <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+          Intelligence officers can't take notes in the field. To remember complex data permanently, they use the <strong>Operational Self-Debrief</strong>. You are about to learn how to lock short-term knowledge into long-term memory using deliberate cognitive effort.
+        </p>
       </div>
       
-      <form onsubmit="saveStudentData(event)" class="space-y-4 pt-2">
+      <form onsubmit="saveStudentData(event)" class="space-y-4 pt-4 border-t border-slate-800">
         <div>
-          <label class="text-xs font-bold text-slate-300 block mb-1">Agent Name</label>
+          <label class="text-xs font-bold text-slate-300 block mb-1">Student / Agent Name</label>
           <input id="setup-name" required type="text" placeholder="e.g., Ali Raza" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-emerald-500" />
         </div>
         <div>
@@ -124,13 +113,13 @@
           <input id="setup-email" required type="email" placeholder="student@university.edu" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-emerald-500" />
         </div>
         <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-xl text-xs transition shadow-lg">
-          Initialize Workspace
+          Initialize Training Workspace
         </button>
       </form>
     </div>
   </div>
 
-  <!-- Logbook Drawer / Modal -->
+  <!-- Logbook Drawer -->
   <div id="logbook-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-xl w-full shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -138,33 +127,27 @@
           <h3 class="font-bold text-white text-base flex items-center gap-2">
             <span>📁</span> Extraction Logbook
           </h3>
-          <p class="text-xs text-slate-400">Past operational debriefs stored in local memory</p>
         </div>
         <button onclick="toggleLogbook(false)" class="text-slate-400 hover:text-white text-xs font-bold px-2 py-1 bg-slate-800 rounded-lg">✕</button>
       </div>
-
-      <div id="logbook-feed" class="space-y-3 overflow-y-auto pr-1 flex-1">
-        <!-- Rendered by JS -->
-      </div>
-
+      <div id="logbook-feed" class="space-y-3 overflow-y-auto pr-1 flex-1"></div>
       <div class="pt-2 border-t border-slate-800 flex justify-between items-center text-xs">
         <button onclick="clearAllLogs()" class="text-rose-400 hover:underline">Clear History</button>
-        <button onclick="toggleLogbook(false)" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg font-bold">Close</button>
+        <button onclick="toggleLogbook(false)" class="px-4 py-2 bg-slate-800 text-slate-200 rounded-lg font-bold">Close</button>
       </div>
     </div>
   </div>
 
   <script>
     // =========================================================================
-    // CONFIGURATION
+    // CONFIGURATION - YOUR SCRIPT URL IS EMBEDDED HERE
     // =========================================================================
-    // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE:
-    const GOOGLE_SCRIPT_URL = "YOUR_SCRIPT_URL_HERE";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw5z89ZCaoiaZcOv3R-ZcnU8oWLWGEWFZYWTY4DL-BPL87KqOnSFG0Fe2yBrXnerq2KTg/exec";
 
     const PHASES = [
       { id: 1, title: "Ingestion & Focus Block", badge: "Phase 1: Active Acquisition", defaultDuration: 10 * 60 },
-      { id: 2, title: "Cold Reconstruction Dump", badge: "Phase 2: Unassisted Retrieval", defaultDuration: 3 * 60 },
-      { id: 3, title: "Gap Audit & Error Patching", badge: "Phase 3: Critical Contrast & Patching", defaultDuration: 2 * 60 }
+      { id: 2, title: "The Cold Dump", badge: "Phase 2: Unassisted Retrieval", defaultDuration: 3 * 60 },
+      { id: 3, title: "Gap Audit & Error Patching", badge: "Phase 3: Critical Contrast", defaultDuration: 2 * 60 }
     ];
 
     let currentPhaseIdx = 0;
@@ -247,13 +230,9 @@
         clearInterval(timerInterval);
         timerRunning = false;
         btn.innerText = "Resume";
-        btn.classList.remove('bg-emerald-600', 'text-slate-950');
-        btn.classList.add('bg-slate-800', 'text-slate-200');
       } else {
         timerRunning = true;
         btn.innerText = "Pause";
-        btn.classList.add('bg-emerald-600', 'text-slate-950');
-        btn.classList.remove('bg-slate-800', 'text-slate-200');
         
         timerInterval = setInterval(() => {
           if (timerSeconds > 0) {
@@ -274,14 +253,11 @@
       timerRunning = false;
       timerSeconds = PHASES[currentPhaseIdx].defaultDuration;
       updateTimerDisplay();
-      const btn = document.getElementById('btn-toggle-timer');
-      btn.innerText = "Start";
-      btn.classList.remove('bg-emerald-600', 'text-slate-950');
-      btn.classList.add('bg-slate-800', 'text-slate-200');
+      document.getElementById('btn-toggle-timer').innerText = "Start Timer";
     }
 
     // =========================================================================
-    // PHASE CONTROLLER
+    // PHASE CONTROLLER (WITH BUILT-IN COACHING)
     // =========================================================================
     function renderCurrentPhase() {
       const phase = PHASES[currentPhaseIdx];
@@ -301,36 +277,44 @@
       if (currentPhaseIdx === 0) {
         container.innerHTML = `
           <div class="space-y-4 fade-in">
+            <!-- Coach's Corner -->
+            <div class="bg-indigo-950/30 border border-indigo-800/50 p-4 rounded-xl flex gap-3 items-start">
+              <div class="text-xl">🧠</div>
+              <div>
+                <h4 class="text-xs font-bold text-indigo-300">Agent Briefing: The Illusion of Competence</h4>
+                <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                  Passive rereading tricks your brain into thinking it knows the material because the text is right in front of you. <strong>Your mission here:</strong> Extract only the core logic, formulas, or pathways. Do not copy word-for-word. Build the framework.
+                </p>
+              </div>
+            </div>
+
             <div>
-              <label class="text-xs font-bold text-slate-300 block mb-1">Target Brief / Concept Identifier</label>
+              <label class="text-xs font-bold text-slate-300 block mb-1">Target Concept Identifier</label>
               <input id="input-topic" type="text" value="${escapeHtml(sessionData.topic)}" placeholder="e.g., DSM-5 Criteria for PTSD or Starling's Law of the Heart" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-emerald-500" />
             </div>
             <div>
-              <div class="flex items-center justify-between mb-1">
-                <label class="text-xs font-bold text-slate-300">Source Dossier / Reference Material</label>
-                <span class="text-[11px] text-slate-500">Keep it concise. You will not see this in Step 2.</span>
-              </div>
-              <textarea id="input-source" rows="8" placeholder="Paste or summarize key formulas, symptoms, operational steps, or diagnostic markers..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 mono leading-relaxed focus:outline-none focus:border-emerald-500">${escapeHtml(sessionData.sourceMaterial)}</textarea>
-            </div>
-            <div class="p-3 bg-slate-950/60 rounded-xl border border-slate-850 flex items-center justify-between text-xs text-slate-400">
-              <span class="flex items-center gap-2"><span class="text-emerald-400">●</span> Read with high cognitive intensity. Avoid passive verbatim rereading.</span>
-              <button onclick="advanceToPhase2()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold rounded-lg text-xs transition">Lock Source & Go Cold ➔</button>
+              <label class="text-xs font-bold text-slate-300 block mb-1">Source Dossier Notes</label>
+              <textarea id="input-source" rows="6" placeholder="Summarize key mechanisms here. Read with high intensity. You will lose access to this in the next phase..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-200 mono leading-relaxed focus:outline-none focus:border-emerald-500">${escapeHtml(sessionData.sourceMaterial)}</textarea>
             </div>
           </div>
         `;
       } else if (currentPhaseIdx === 1) {
         container.innerHTML = `
           <div class="space-y-4 fade-in">
-            <div class="p-3 bg-amber-950/30 border border-amber-800/40 rounded-xl flex items-center justify-between text-xs">
-              <div class="flex items-center gap-2 text-amber-300 font-semibold"><span>🔒</span> SOURCE NOTES ENCRYPTED & HIDDEN</div>
-              <span class="text-slate-400 text-[11px]">Reconstruct cold. Write flowcharts, reverse sequences, or keywords.</span>
+            <!-- Coach's Corner -->
+            <div class="bg-amber-950/30 border border-amber-800/50 p-4 rounded-xl flex gap-3 items-start">
+              <div class="text-xl">⚡</div>
+              <div>
+                <h4 class="text-xs font-bold text-amber-300">Agent Briefing: The Struggle is the Signal</h4>
+                <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                  Your notes are now locked. It is entirely normal to feel mental friction right now—that friction is the physical feeling of your brain constructing new neural synapses. Type out absolutely everything you can remember. <em>Pro-tip: Try retrieving the steps in reverse order to expose blind spots.</em>
+                </p>
+              </div>
             </div>
+
             <div>
               <label class="text-xs font-bold text-slate-300 block mb-1">Unassisted Cold Extraction Scratchpad</label>
-              <textarea id="input-cold" rows="10" placeholder="Type everything retrieved from memory immediately..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-xs text-amber-100 mono leading-relaxed focus:outline-none focus:border-amber-500">${escapeHtml(sessionData.coldDump)}</textarea>
-            </div>
-            <div class="flex justify-end">
-              <button onclick="advanceToPhase3()" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold rounded-lg text-xs transition">Halt Retrieval & Audit Gaps ➔</button>
+              <textarea id="input-cold" rows="8" placeholder="Start typing everything retrieved from memory immediately..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3.5 text-xs text-amber-100 mono leading-relaxed focus:outline-none focus:border-amber-500">${escapeHtml(sessionData.coldDump)}</textarea>
             </div>
           </div>
         `;
@@ -338,24 +322,37 @@
       } else if (currentPhaseIdx === 2) {
         container.innerHTML = `
           <div class="space-y-4 fade-in">
+            <!-- Coach's Corner -->
+            <div class="bg-emerald-950/30 border border-emerald-800/50 p-4 rounded-xl flex gap-3 items-start">
+              <div class="text-xl">🎯</div>
+              <div>
+                <h4 class="text-xs font-bold text-emerald-400">Agent Briefing: Reconsolidation</h4>
+                <p class="text-xs text-slate-300 mt-1 leading-relaxed">
+                  Compare your cold dump (right) with the original truth (left). Finding a mistake right now makes the memory highly malleable. When you explicitly type out what you missed in the Gap Audit box below, you tag that specific gap for priority consolidation during sleep tonight.
+                </p>
+              </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div class="space-y-1">
-                <div class="flex items-center justify-between"><span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Original Source Reference</span></div>
-                <div class="w-full h-48 overflow-y-auto bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 mono leading-relaxed whitespace-pre-wrap select-none">${escapeHtml(sessionData.sourceMaterial || "No source provided.")}</div>
+                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Original Source Reference</span>
+                <div class="w-full h-40 overflow-y-auto bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 mono leading-relaxed whitespace-pre-wrap select-none">${escapeHtml(sessionData.sourceMaterial || "No source provided.")}</div>
               </div>
               <div class="space-y-1">
-                <div class="flex items-center justify-between"><span class="text-[11px] font-bold text-amber-400 uppercase tracking-wider">Your Cold Reconstruction</span></div>
-                <div class="w-full h-48 overflow-y-auto bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-amber-100 mono leading-relaxed whitespace-pre-wrap select-none">${escapeHtml(sessionData.coldDump || "No cold notes typed.")}</div>
+                <span class="text-[11px] font-bold text-amber-400 uppercase tracking-wider">Your Cold Reconstruction</span>
+                <div class="w-full h-40 overflow-y-auto bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-amber-100 mono leading-relaxed whitespace-pre-wrap select-none">${escapeHtml(sessionData.coldDump || "No cold notes typed.")}</div>
               </div>
             </div>
+            
             <div>
-              <label class="text-xs font-bold text-indigo-300 block mb-1">Gap Audit: What was missed, omitted, or hallucinated?</label>
-              <textarea id="input-audit" rows="3" placeholder="e.g., Missed the secondary compensatory pathway. Synapses patched." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">${escapeHtml(sessionData.gapAudit)}</textarea>
+              <label class="text-xs font-bold text-indigo-300 block mb-1">Gap Audit: What exactly did you miss or confuse?</label>
+              <textarea id="input-audit" rows="2" placeholder="e.g., I missed the secondary pathway, and confused alpha-1 with beta-2..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">${escapeHtml(sessionData.gapAudit)}</textarea>
             </div>
-            <div class="flex items-center justify-between">
-              <span id="sync-status" class="text-xs font-semibold text-emerald-400 opacity-0 transition-opacity">Saving to remote logs...</span>
-              <button onclick="finalizeDebrief()" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-lg text-xs transition shadow-lg flex items-center gap-1.5">
-                <span>✓</span> Save Debrief to Archive
+            
+            <div class="flex items-center justify-between mt-2">
+              <span id="sync-status" class="text-xs font-semibold text-emerald-400 opacity-0 transition-opacity">Saving to class logs...</span>
+              <button onclick="finalizeDebrief()" class="px-5 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs transition shadow-lg flex items-center gap-2">
+                <span>✓</span> Save Debrief & Sync Data
               </button>
             </div>
           </div>
@@ -367,7 +364,7 @@
     // WORKFLOW & API SYNC
     // =========================================================================
     function advanceToPhase2() {
-      sessionData.topic = document.getElementById('input-topic')?.value.trim() || "Untitled Mission Debrief";
+      sessionData.topic = document.getElementById('input-topic')?.value.trim() || "Untitled Concept";
       sessionData.sourceMaterial = document.getElementById('input-source')?.value.trim();
       currentPhaseIdx = 1;
       resetTimerForCurrentPhase();
@@ -408,7 +405,7 @@
       // Complete Screen
       setTimeout(() => {
         const container = document.getElementById('workspace-dynamic');
-        document.getElementById('phase-title').innerText = "Debrief Complete & Logged";
+        document.getElementById('phase-title').innerText = "Debrief Complete";
         document.getElementById('phase-badge').innerText = "Synaptic Trace Consolidated";
         
         clearInterval(timerInterval);
@@ -417,23 +414,22 @@
 
         container.innerHTML = `
           <div class="text-center py-8 space-y-4 fade-in">
-            <div class="h-14 w-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-2xl flex items-center justify-center mx-auto">✓</div>
+            <div class="h-16 w-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-3xl flex items-center justify-center mx-auto">✓</div>
             <div>
-              <h3 class="text-base font-bold text-white">Extraction Archived</h3>
+              <h3 class="text-lg font-bold text-white">Extraction Archived Successfully</h3>
               <p class="text-xs text-slate-400 max-w-sm mx-auto mt-1">Topic: <strong class="text-slate-200">${escapeHtml(sessionData.topic)}</strong></p>
+              <p class="text-[11px] text-emerald-400 font-semibold mt-3">Data synced to instructor logs.</p>
             </div>
-            <div class="flex justify-center gap-2 pt-2">
-              <button onclick="toggleLogbook(true)" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-lg transition">Review in Logbook</button>
-              <button onclick="resetToNewDebrief()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 text-xs font-bold rounded-lg transition shadow-md">Start Next Debrief</button>
+            <div class="flex justify-center gap-3 pt-4">
+              <button onclick="toggleLogbook(true)" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition">View My Archive</button>
+              <button onclick="resetToNewDebrief()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 text-xs font-bold rounded-xl transition shadow-md">Start Next Mission</button>
             </div>
           </div>
         `;
-      }, 800);
+      }, 1000); // Small delay to let them see the "Saving..." text
     }
 
     function syncDebriefToGoogleSheets(data, name, email) {
-      if (GOOGLE_SCRIPT_URL === "YOUR_SCRIPT_URL_HERE") return;
-
       const payload = {
         name: name,
         email: email,
@@ -445,7 +441,7 @@
 
       fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
-        mode: "no-cors", // Crucial for preventing CORS blocks
+        mode: "no-cors", 
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(payload)
       }).catch(err => console.error("Sync error:", err));
@@ -477,19 +473,19 @@
         return;
       }
       feed.innerHTML = logbook.map(entry => `
-        <div class="p-3.5 bg-slate-950 border border-slate-800 rounded-xl space-y-2 text-xs">
+        <div class="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-2 text-xs">
           <div class="flex items-center justify-between">
-            <span class="font-bold text-emerald-400">${escapeHtml(entry.topic)}</span>
+            <span class="font-bold text-emerald-400 text-sm">${escapeHtml(entry.topic)}</span>
             <span class="text-[10px] text-slate-500 mono">${entry.timestamp}</span>
           </div>
-          <div class="p-2 bg-slate-900 rounded-lg text-slate-300 mono text-[11px] whitespace-pre-wrap"><strong class="text-amber-300 block text-[10px] uppercase">Reconstruction:</strong>${escapeHtml(entry.coldDump || "N/A")}</div>
-          ${entry.gapAudit ? `<div class="text-[11px] text-slate-400"><strong class="text-indigo-400">Gap Fix:</strong> ${escapeHtml(entry.gapAudit)}</div>` : ''}
+          <div class="p-3 bg-slate-900 rounded-lg text-slate-300 mono text-[11px] whitespace-pre-wrap leading-relaxed"><strong class="text-amber-300 block text-[10px] uppercase mb-1">Cold Reconstruction:</strong>${escapeHtml(entry.coldDump || "N/A")}</div>
+          ${entry.gapAudit ? `<div class="text-[11px] text-slate-400 mt-2"><strong class="text-indigo-400">Gap Fix:</strong> ${escapeHtml(entry.gapAudit)}</div>` : ''}
         </div>
       `).join('');
     }
 
     function clearAllLogs() {
-      if (!confirm("Clear your debrief history?")) return;
+      if (!confirm("Clear your local debrief history?")) return;
       logbook = [];
       localStorage.removeItem('osd_debrief_logs');
       updateLogCount();
